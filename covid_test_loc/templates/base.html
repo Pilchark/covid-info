@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}{% endblock %} - FlaskApp</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='animate.min.css') }}">
+
+  {% block head %}{% endblock %}
+
+</head>
+
+<body>
+  <center>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('index') }}">Create</a>
+      <a href="#">About</a>
+    </nav>
+    <hr>
+  </center>
+  <center>
+    {% block content %} {% endblock %}
+  </center>
+  {% block script %} {% endblock %}
+</body>
+
+</html>
