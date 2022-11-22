@@ -3,11 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}{% endblock %} - FlaskApp</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='animate.min.css') }}">
-
   {% block head %}{% endblock %}
-
 </head>
 
 <body>
@@ -19,10 +15,7 @@
     </nav>
     <hr>
   </center>
-  <center>
-    {% block content %} {% endblock %}
-  </center>
-  {% block script %} {% endblock %}
+  {% block content %} {% endblock %}
 </body>
 
 </html>

@@ -33,6 +33,7 @@
       top: 0px;
       left: 0px;
     }
+
   </style>
 </head>
 <script charset="utf-8" src="https://map.qq.com/api/gljs?v=1.exp&key={{DEVELOPER_KEY}}"></script>
@@ -126,6 +127,20 @@
           },
           geometries: markerGeometries
         });
+        var infoWindow = new TMap.InfoWindow({
+          map: map,
+          position: new TMap.LatLng(39.984104, 116.307503),
+          offset: { x: 0, y: -32 } //设置信息窗相对position偏移像素
+        });
+        infoWindow.close();//初始关闭信息窗关闭
+        marker.on("click", function (evt) {
+        //设置infoWindow
+        infoWindow.open(); //打开信息窗
+        infoWindow.setPosition(evt.geometry.position);//设置信息窗位置
+        infoWindow.setContent(evt.geometry.styleId.toString());//设置信息窗内容
+        // infoWindow.setContent(evt.geometry.properties.name);//设置信息窗内容
+        
+      })
       }
     });
   }
