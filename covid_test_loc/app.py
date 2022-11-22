@@ -20,6 +20,7 @@ app = Flask(__name__)
 def get_api_locs():
     p = DataProcessor()
     table_name = p.all_sheets[0]
+    print(table_name)
     json_data_path = os.path.join(base_dir, f"data/{table_name}.json")
     with open(json_data_path,"r") as f:
         res = json.load(f)
@@ -27,7 +28,11 @@ def get_api_locs():
     for i in res.get("all_data"):
         lat = i.get("location").get("lat")
         lng = i.get("location").get("lng")
-        res_list.append((lat,lng))
+        name = i.get("采样点名称")
+        addr = i.get("采样点地址")
+        open_time = i.get("开放时间")
+        tel = i.get("联系电话")
+        res_list.append((lat,lng,name,addr,open_time,tel))
     return table_name,res_list
 
 # urls 
@@ -35,20 +40,7 @@ def get_api_locs():
 # index
 @app.route("/", methods=["POST", "GET"])
 def index():
-    # V1 版本开始支持链式调用
-    # 你所看到的格式其实是 `black` 格式化以后的效果
-    # 可以执行 `pip install black` 下载使用
-    bar = (
-        Bar()
-        .add_xaxis(["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"])
-        .add_yaxis("商家A", [5, 20, 36, 10, 75, 90])
-        .set_global_opts(title_opts=opts.TitleOpts(title="主标题", subtitle="副标题"))
-        # 或者直接使用字典参数
-        # .set_global_opts(title_opts={"text": "主标题", "subtext": "副标题"})
-    )
-
-    bar.render(os.path.join(base_dir, "covid_test_loc/templates/mycharts.html"))
-    return render_template("mycharts.html", key = DEVELOPER_KEY)
+   return "200"
 
 @app.route("/map", methods=["GET"])
 def map():

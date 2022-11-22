@@ -64,7 +64,15 @@
       minimumClusterSize: 3,
       geometries: [
         {% for loc in locs %}
-          {position: new TMap.LatLng({{loc[0]}}, {{loc[1]}})},
+          {
+            position: new TMap.LatLng({{loc[0]}}, {{loc[1]}}),
+            "properties": {
+              "name": "名称: {{loc[2]}}",
+              "addr": "地址: {{loc[3]}}",
+              "open_time": "开放时间: {{loc[4]}}",
+              "tel": "联系电话: <a>{{loc[5]}}</a>",
+            },
+          },
         {% endfor %}
       ],
       zoomOnClick: true,
@@ -102,7 +110,13 @@
           clusterBubbleList.push(clusterBubble);
         } else {
           markerGeometries.push({
-            position: item.center
+            position: item.center,
+            properties: {
+              "name": item.geometries[0].properties.name,
+              "addr": item.geometries[0].properties.addr,
+              "open_time": item.geometries[0].properties.open_time,
+              "tel": item.geometries[0].properties.tel,
+            }
           });
         }
       });
@@ -127,6 +141,7 @@
           },
           geometries: markerGeometries
         });
+        // info window popup on click
         var infoWindow = new TMap.InfoWindow({
           map: map,
           position: new TMap.LatLng(39.984104, 116.307503),
@@ -137,8 +152,13 @@
         //设置infoWindow
         infoWindow.open(); //打开信息窗
         infoWindow.setPosition(evt.geometry.position);//设置信息窗位置
-        infoWindow.setContent(evt.geometry.styleId.toString());//设置信息窗内容
-        // infoWindow.setContent(evt.geometry.properties.name);//设置信息窗内容
+        // infoWindow.setContent(evt.geometry.id.toString());//设置信息窗内容
+        infoWindow.setContent(
+          evt.geometry.properties.name + "<br/>" + 
+          evt.geometry.properties.addr + "<br/>" + 
+          evt.geometry.properties.open_time + "<br/>" + 
+          evt.geometry.properties.tel
+          );//设置信息窗内容
         
       })
       }
