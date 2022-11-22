@@ -33,6 +33,7 @@ class DataProcessor:
 
     def trans_xls_to_csv(self):
         for i_name in self.all_sheets:
+            print(f"transitioning {i_name}..")
             df = pd.read_excel(self.origin_data, sheet_name=i_name)
             last_col = list(df.columns)[-1]
 
@@ -42,8 +43,14 @@ class DataProcessor:
             output_path = os.path.join(base_dir, f"data/{i_name}.csv")
             df.to_csv(output_path, index=None, header=None)
 
-    def trans_csv_to_json(self):
-        for i_name in self.all_sheets:
+    def trans_csv_to_json(self, num=None):
+        """
+        use pandas read csv file, output to json 
+        """
+        if num is not None:
+            sheets = self.all_sheets[num:num+1]
+        for i_name in sheets:
+            logger.info(f"transitioning {i_name} csv to json ...")
             df = pd.read_csv(os.path.join(base_dir, f"data/{i_name}.csv"))
             result = df.to_json(force_ascii=False, orient="records")
             parsed_list = json.loads(result)
@@ -58,15 +65,16 @@ class DataProcessor:
                 json.dump(dict, f, ensure_ascii=False, indent=4)
             logger.info(f"{i_name} json file export success !")
 
-    def update_loc_info_from_json(self):
+    def update_loc_info_from_json(self,num=None):
         """
         use pandas read csv file, add new loc col by tencent geocoder tool.
         """
-        for i_name in self.all_sheets:
+        if num is not None:
+            sheets = self.all_sheets[num:num+1]
+        for i_name in sheets:
             json_data_path = os.path.join(base_dir, f"data/{i_name}.json")
             with open(json_data_path, "r") as f:
                 json_data = json.load(f)
-            count = 0
             for i in json_data["all_data"]:
                 i_addr_name = i.get("采样点地址")
                 parameters = {'address': i_addr_name, 'key': DEVELOPER_KEY}
@@ -91,10 +99,8 @@ class DataProcessor:
 
 
 if __name__ == "__main__":
-    # trans_xls_to_csv()
-    # trans_csv_to_json()
     p = DataProcessor()
-    # print(p.get_all_sheets_from_xls())
-    p.update_loc_info_from_json()
-    
+    # p.trans_xls_to_csv()
+    # p.trans_csv_to_json(2)
+    p.update_loc_info_from_json(2)
 
