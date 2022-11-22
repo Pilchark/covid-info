@@ -1,9 +1,7 @@
 import json
 import os,sys
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, render_template
 from rich import print
-from pyecharts.charts import Bar
-from pyecharts import options as opts
 from dotenv import load_dotenv
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -17,9 +15,12 @@ DEVELOPER_KEY = os.getenv('DEVELOPER_KEY')
 app = Flask(__name__)
 
 
-def get_api_locs():
+def get_api_locs(num:int=0):
+    """
+    args: default=0, elect different maps.
+    """
     p = DataProcessor()
-    table_name = p.all_sheets[0]
+    table_name = p.all_sheets[num]
     print(table_name)
     json_data_path = os.path.join(base_dir, f"data/{table_name}.json")
     with open(json_data_path,"r") as f:
@@ -35,17 +36,22 @@ def get_api_locs():
         res_list.append((lat,lng,name,addr,open_time,tel))
     return table_name,res_list
 
-# urls 
+# urls
 
-# index
 @app.route("/", methods=["POST", "GET"])
 def index():
    return "200"
 
 @app.route("/map", methods=["GET"])
 def map():
-    table_name, res_list = get_api_locs()
-    return render_template("covid_map.html", key = DEVELOPER_KEY, locs = res_list,title=table_name)
+    table_name, res_list = get_api_locs(2)
+    return render_template("map.html", key = DEVELOPER_KEY, locs = res_list,title=table_name)
+
+@app.route("/dot", methods=["GET"])
+def dot():
+    table_name, res_list = get_api_locs(2)
+    return render_template("dot.html", key = DEVELOPER_KEY, locs = res_list,title=table_name)
+
 
 @app.route("/api/locs", methods=["GET"])
 def api_locs():
