@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "COVID_Test_Loc"
+name = "covid_info"
 version = "0.1.0"
 description = ""
 authors = ["XuQiang <xq_work@outlook.com>"]

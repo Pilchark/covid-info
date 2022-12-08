@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}">
+  {% block head %}{% endblock %}
+</head>
+
+<body>
+  <center>
+    <nav>
+      <a href="{{ url_for('index') }}">首页</a>
+      <a href="{{ url_for('map', name=0)}}">重点人群采样点</a>
+      <a href="{{ url_for('map', name=1) }}">医疗卫生机构及公共场所</a>
+      <a href="{{ url_for('map', name=2) }}">愿检尽检</a>
+    </nav>
+    <hr>
+  </center>
+  {% block content %} {% endblock %}
+</body>
+
+</html>

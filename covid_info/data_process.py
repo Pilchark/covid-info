@@ -2,6 +2,7 @@ from datetime import datetime
 import json,time
 import pandas as pd
 from rich import print
+from rich.progress import track
 import os,sys
 import requests
 from dotenv import load_dotenv
@@ -9,7 +10,7 @@ from dotenv import load_dotenv
 # add current project to sys path
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(base_dir)
-from covid_test_loc.logger import logger
+from covid_info.logger import logger
 
 # load env from .env
 ENV_CONF = os.path.join(base_dir, '.env')
@@ -19,8 +20,8 @@ ADDR_TO_LOC_URL = os.getenv('ADDR_TO_LOC_URL')
 
 
 class DataProcessor:
-    def __init__(self) -> None:
-        self.origin_data = os.path.join(base_dir, "data/data.xlsx")
+    def __init__(self,filename:str) -> None:
+        self.origin_data = os.path.join(base_dir, f"data/{filename}.xlsx")
         self.all_sheets = self.get_all_sheets_from_xls()
 
     def get_all_sheets_from_xls(self) -> list:
@@ -31,24 +32,35 @@ class DataProcessor:
         xls = pd.ExcelFile(self.origin_data)
         return xls.sheet_names
 
-    def trans_xls_to_csv(self):
-        for i_name in self.all_sheets:
+    def trans_xls_to_csv(self, num:int=None):
+        """
+        use pandas read xls, transfer to csv file.
+        """
+        if num is not None:
+            sheets = self.all_sheets[num:num+1]
+        else:
+            sheets = self.all_sheets
+        for i_name in sheets:
             print(f"transitioning {i_name}..")
             df = pd.read_excel(self.origin_data, sheet_name=i_name)
             last_col = list(df.columns)[-1]
 
             df[last_col] = df[last_col].astype("string")
             df = df.replace("\n"," ",regex=True)
+            df = df.replace(r'\s+', " ", regex=True)
+            df = df.fillna(method='pad')
 
             output_path = os.path.join(base_dir, f"data/{i_name}.csv")
             df.to_csv(output_path, index=None, header=None)
 
-    def trans_csv_to_json(self, num=None):
+    def trans_csv_to_json(self, num:int=None):
         """
-        use pandas read csv file, output to json 
+        use pandas read csv file, output to json.
         """
         if num is not None:
             sheets = self.all_sheets[num:num+1]
+        else:
+            sheets = self.all_sheets
         for i_name in sheets:
             logger.info(f"transitioning {i_name} csv to json ...")
             df = pd.read_csv(os.path.join(base_dir, f"data/{i_name}.csv"))
@@ -71,36 +83,54 @@ class DataProcessor:
         """
         if num is not None:
             sheets = self.all_sheets[num:num+1]
+        else:
+            sheets = self.all_sheets
         for i_name in sheets:
             json_data_path = os.path.join(base_dir, f"data/{i_name}.json")
             with open(json_data_path, "r") as f:
                 json_data = json.load(f)
-            for i in json_data["all_data"]:
+            count = 0
+            for i in track(json_data["all_data"]):
                 i_addr_name = i.get("采样点地址")
-                parameters = {'address': i_addr_name, 'key': DEVELOPER_KEY}
-                response = requests.get(ADDR_TO_LOC_URL, parameters)
-                answer = response.json()
-                res_location = answer.get("result").get("location")
-                print(res_location)
+                res_location = i.get("location",None)
+                if res_location is not None:
+                    continue
+                res_location = self.bd_addr_to_loc(addr=i_addr_name)
                 i["location"] = res_location
-                time.sleep(0.3)
-
+                time.sleep(0.5)
+                count += 1
+                # backup when transition every 100 data
+                if count % 100 == 0:
+                    output_json_data_path = os.path.join(base_dir, f"data/{i_name}_update.json")
+                    with open(output_json_data_path, "w") as f:
+                        json.dump(json_data, f, ensure_ascii=False, indent=4)
+                    time.sleep(5)
             output_json_data_path = os.path.join(base_dir, f"data/{i_name}_update.json")
             with open(output_json_data_path, "w") as f:
                 json.dump(json_data, f, ensure_ascii=False, indent=4)
 
-    def address_coordinate_post_request(address):
+    @classmethod
+    def bd_addr_to_loc(cls, addr):
         """通过地址获取经纬度
         """
-        parameters = {'address': address, 'key': DEVELOPER_KEY}
-        response = requests.get(ADDR_TO_LOC_URL, parameters)
-        answer = response.json()
-        return answer
+        url = ADDR_TO_LOC_URL + f'address={addr}&output=json&ak={DEVELOPER_KEY}'
+        res = requests.get(url)
+        answer = res.json()
+        try:
+            location = answer.get('result').get('location')
+            return location
+        except Exception as e:
+            logger.info("get location failed")
+            print(f"request addr : {addr}")
+            print(f"return : {answer}")
+            raise e
+
 
 
 if __name__ == "__main__":
-    p = DataProcessor()
-    # p.trans_xls_to_csv()
-    # p.trans_csv_to_json(2)
-    p.update_loc_info_from_json(2)
-
+    p = DataProcessor(filename="Inoculation_point")
+    print(p.all_sheets[0])
+    p.trans_xls_to_csv(num=0)
+    # p.trans_csv_to_json()
+    # p.update_loc_info_from_json(2)
+    # p.bd_addr_to_loc(addr="大连市庄河市伟业城市绿洲小区5#-7#楼西社区会议室门前")
