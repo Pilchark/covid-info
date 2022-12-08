@@ -5,12 +5,22 @@
 {% endblock %}
 
 {% block content %}
-<h1>DL COVID help info web</h1>
-<p>This web is updated according BanDaoChenBao</p>
+<h1>大连市核酸检测相关信息</h1>
+<p>内容来源 : 半岛晨报公众号</p>
 <ul>
     <li><a href="{{ url_for('index') }}">首页</a></li>
-    <li><a href="{{ url_for('map', name=0)}}">重点人群采样点</a></li>
-    <li><a href="{{ url_for('map', name=1) }}">医疗卫生机构及公共场所</a></li>
-    <li><a href="{{ url_for('map', name=2) }}">愿检尽检</a></li>
+    <li><a href="{{ url_for('map', name="重点人群采样点")}}">重点人群采样点</a></li>
+    <li><a href="{{ url_for('map', name="医疗卫生机构及公共场所")}}">医疗卫生机构及公共场所</a></li>
+    <li><a href="{{ url_for('map', name="愿检尽检")}}">愿检尽检</a></li>
 </ul>
+
+<footer>
+    {% block footer %}
+    <center>
+        <small> &copy; 2022–<script>document.write(new Date().getFullYear())</script> <a href="mailto:dadigua123456@outlook.com">Contact Me</a>
+        </small>
+    </center>
+    {% endblock %}
+</footer>
+
 {% endblock %}

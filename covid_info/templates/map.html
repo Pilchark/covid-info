@@ -47,11 +47,23 @@
   map.addControl(new BMap.OverviewMapControl());
 
   {% for loc in locs %}
-  var marker{{loc[0]}} = new BMap.Marker(new BMap.Point({{loc[1]}}, {{loc[2]}}));
+  var point{{loc[0]}} = new BMap.Point({{loc[1]}}, {{loc[2]}});
+  var marker{{loc[0]}} = new BMap.Marker(point{{loc[0]}});
   map.addOverlay(marker{{loc[0]}});
+  
+  // 创建信息窗口
   marker{{loc[0]}}.addEventListener("click", function(){
-    // alert("您点击了标注");
-    console.log("clicked on {{loc[3]}}, {{loc[4]}}");
+    var opts = {    
+    width : 250,     // 信息窗口宽度    
+    height: 100,     // 信息窗口高度    
+    title : '{{loc[3]}}',  // 信息窗口标题   
+    }
+    var infoWindow = new BMap.InfoWindow(
+      "地址: {{loc[4]}}<br>时间: {{loc[5]}}<br>电话: {{loc[6]}}", 
+      opts);  // 创建信息窗口对象
+    map.openInfoWindow(infoWindow, point{{loc[0]}});
+    // console.log("clicked on {{loc[3]}}, {{loc[4]}}");
+    // console.log(opts.title);
   });
   {% endfor %}
 

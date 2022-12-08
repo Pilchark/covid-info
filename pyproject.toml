@@ -7,7 +7,6 @@ authors = ["XuQiang <xq_work@outlook.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 Flask = "^2.2.2"
-pyecharts = "^1.9.1"
 gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]

@@ -7,7 +7,7 @@ services:
     # command: flask run -h 0.0.0.0 -p 3000
     command: gunicorn -b :3000 covid_info.app:app
     environment:
-      FLASK_DEBUG: 1
+      FLASK_DEBUG: 0
       FLASK_APP: covid_info.app
       DEVELOPER_KEY: N8YMmumHskmhrFmnxP29OAkERGzkmBtk
       WEB_KEY: Y6jpl8OGLbQcbg67zGzrGsqYdS6bTiKr
