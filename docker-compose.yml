@@ -9,7 +9,6 @@ services:
     environment:
       FLASK_DEBUG: 0
       FLASK_APP: covid_info.app
-      DEVELOPER_KEY: N8YMmumHskmhrFmnxP29OAkERGzkmBtk
       WEB_KEY: Y6jpl8OGLbQcbg67zGzrGsqYdS6bTiKr
       ADDR_TO_LOC_URL: https://api.map.baidu.com/geocoding/v3/?
 
