@@ -21,3 +21,9 @@
 6. [ ] 点击显示详细信息：检测点名称，电话等。
 7. [ ] github pages 渲染静态页面
 <https://gitee.com/help/articles/4136#article-header4>
+
+## 参考 API 手册
+
+- [API 拾取系统](http://api.map.baidu.com/lbsapi/getpoint/index.html)
+- [JavaScript API 3.0](https://lbsyun.baidu.com/index.php?title=jspopular3.0/guide/infowindow)
+- [示例中心](https://lbsyun.baidu.com/jsdemo.htm#eMarkerAddEvent)
